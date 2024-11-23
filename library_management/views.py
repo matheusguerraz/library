@@ -36,3 +36,21 @@ def create_book(request):
 
         # Caso os dados sejam inválidos, retorna um erro 400 com os detalhes
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+def edit_book(request, book_id):
+
+    try:
+        # Tenta obter o livro pelo ID fornecido
+        book = Book.objects.get(id=book_id)       
+    except:
+        return Response({'error:': 'Book not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = BookSerializer(book, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
